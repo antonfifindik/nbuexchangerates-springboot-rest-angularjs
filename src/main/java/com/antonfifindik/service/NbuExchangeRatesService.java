@@ -25,7 +25,7 @@ public class NbuExchangeRatesService {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 ratesList.add(new ExchangeRate(jsonObject.getString("txt"), jsonObject.getDouble("rate"),
-                        jsonObject.getString("cc"), jsonObject.getString("exchangedate")));
+                        jsonObject.getString("cc"), jsonObject.getInt("r030"), jsonObject.getString("exchangedate")));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,6 +34,11 @@ public class NbuExchangeRatesService {
 
     public static List<ExchangeRate> findAll() {
         return ratesList;
+    }
+
+    public static void main(String[] args) {
+        for(ExchangeRate exchangeRate : findAll())
+            System.out.println(exchangeRate);
     }
 
 }
