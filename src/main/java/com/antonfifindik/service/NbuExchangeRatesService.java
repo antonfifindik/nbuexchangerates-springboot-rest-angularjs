@@ -1,44 +1,26 @@
 package com.antonfifindik.service;
 
-import com.antonfifindik.json.JsonReader;
 import com.antonfifindik.model.ExchangeRate;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.antonfifindik.model.ExchangeRateDto;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NbuExchangeRatesService {
 
-    private static List<ExchangeRate> ratesList = new ArrayList<>();
-
     @Autowired
-    private static JsonReader jsonReader;
+    private NbuApiClient nbuApiClient;
 
-    static {
-        try {
-            JSONArray jsonArray = jsonReader.readJsonFromUrl("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                ratesList.add(new ExchangeRate(jsonObject.getString("txt"), jsonObject.getDouble("rate"),
-                        jsonObject.getString("cc"), jsonObject.getInt("r030"), jsonObject.getString("exchangedate")));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public List<ExchangeRate> findAll() {
+        return nbuApiClient.getAll().stream()
+                .map(this::toExchangeRate).collect(Collectors.toList());
     }
 
-    public static List<ExchangeRate> findAll() {
-        return ratesList;
+    private ExchangeRate toExchangeRate(@NonNull ExchangeRateDto input) {
+        return new ExchangeRate(input.getTxt(), input.getRate(), input.getCc(), Integer.parseInt(input.getR030()), input.getExchangedate());
     }
-
-    public static void main(String[] args) {
-        for(ExchangeRate exchangeRate : findAll())
-            System.out.println(exchangeRate);
-    }
-
 }
