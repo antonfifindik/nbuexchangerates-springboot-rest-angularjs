@@ -16,8 +16,7 @@ public class ExchangeRatesController {
     NbuExchangeRatesService nbuExchangeRatesService;
 
     @RequestMapping
-    public List<ExchangeRate> getListOfRates() {
-        return nbuExchangeRatesService.findAll();
+    public List<ExchangeRate> getListOfRates() {return nbuExchangeRatesService.findAll();
     }
 
 }
